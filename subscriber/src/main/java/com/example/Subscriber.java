@@ -13,18 +13,15 @@ import io.dapr.client.domain.CloudEvent;
 @RestController
 public class Subscriber {
     public static void main(String[] args) {
-        // Set default port to 9090
         System.setProperty("server.port", "8082");
         SpringApplication.run(Subscriber.class, args);
-        System.out.println("Subscriber started on port 8082. Listening for messages...");
+        System.out.println("Subscriber started on port 8082. Listening for ordered messages...");
     }
 
     @Topic(name = "messages", pubsubName = "pulsar-pubsub")
     @PostMapping("/messages")
     public void handleMessage(@RequestBody CloudEvent<String> message) {
-        System.out.println("=== Message Received ===");
-        System.out.println("ID: " + message.getId());
-        System.out.println("Data: " + message.getData());
-        System.out.println("=====================");
+    //@RequestMapping Map<String, String> headers
+        System.out.println("Processed message: " + message.getData());
     }
 }
