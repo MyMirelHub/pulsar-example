@@ -88,27 +88,6 @@ docker build --platform linux/amd64 -t <your-registry>/subscriber:1.0 --push .
 
 ### 5. Deploy to Kubernetes
 
-#### Dapr Component Configuration
-
-```yaml
-# k8s/pulsar-component.yaml
-apiVersion: dapr.io/v1alpha1
-kind: Component
-metadata:
-  name: pulsar-pubsub
-  namespace: pulsar-test
-spec:
-  type: pubsub.pulsar
-  version: v1
-  metadata:
-  - name: host
-    value: "pulsar://pulsar-proxy.pulsar.svc.cluster.local:6650"
-  - name: tenant
-    value: "public"
-  - name: namespace
-    value: "default"
-```
-
 #### Deploy Applications
 
 ```bash
