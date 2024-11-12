@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
       - name: subscriber
-        image: rochabr/subscriber:0.4
+        image: <your-registry>/subscriber:1.0
         imagePullPolicy: Always
         env:
         - name: SERVER_PORT
