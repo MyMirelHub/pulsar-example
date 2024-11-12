@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: publisher
-        image: rochabr/publisher:0.4
+        image: <your-registry>/publisher:1.0
         imagePullPolicy: Always
         resources:
           requests:
