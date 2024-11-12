@@ -1,6 +1,6 @@
 # Dapr Pulsar Pub/Sub Demo
 
-This project demonstrates a Dapr pub/sub implementation using Apache Pulsar as the message broker. It consists of a publisher and subscriber application written in Java Spring Boot, deployed to Kubernetes (Minikube).
+This project demonstrates a Dapr pub/sub implementation using Apache Pulsar as the message broker. It consists of a publisher and subscriber application written in Java Spring Boot, deployed to Kubernetes\
 
 ## Project Structure
 
