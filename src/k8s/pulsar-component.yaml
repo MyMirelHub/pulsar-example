@@ -1,0 +1,19 @@
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: pulsar-pubsub
+  namespace: pulsar-test
+spec:
+  type: pubsub.pulsar
+  version: v1
+  metadata:
+  - name: host
+    value: "pulsar-proxy.pulsar.svc.cluster.local:6650"
+  - name: tenant
+    value: "public"
+  - name: namespace
+    value: "default"
+  - name: subscriberType
+    value: "key_shared"
+  - name: processMode
+    value: "sync"
