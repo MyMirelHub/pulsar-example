@@ -16,23 +16,27 @@ public class Publisher {
     private static final String TOPIC_NAME = "messages";
 
     public static void main(String[] args) throws Exception {
-        SpringApplication.run(Publisher.class, args);
+        SpringApplication.run(Publisher.class, args);        
 
-        int count = 0;
+        int messageCount = 1;
 
-        // Create metadata
-        Map<String, String> metadata = new HashMap<>();
-        metadata.put("partitionKey", "pk");
-            
         DaprClient client = new DaprClientBuilder().build();
         while (true) {
-            String message = "Message " + count++;
+            String partitionKey = "key-partition";// + (messageCount % 3); // Using 3 different keys
+            String message = String.format("Message #%d (p-Key: %s)", messageCount, partitionKey); 
+            
+            // Create metadata
+            Map<String, String> metadata = new HashMap<>();
+            metadata.put("partitionKey", partitionKey);
+
             client.publishEvent(
                 PUBSUB_NAME,
                 TOPIC_NAME,
                 message,
                 metadata).block();
+            
             System.out.println("Published message: " + message);
+            messageCount++;
             TimeUnit.SECONDS.sleep(1);
         }
     }
