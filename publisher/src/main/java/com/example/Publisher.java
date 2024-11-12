@@ -1,5 +1,6 @@
 package com.example;
 
+import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -18,11 +19,15 @@ public class Publisher {
     public static void main(String[] args) throws Exception {
         SpringApplication.run(Publisher.class, args);        
 
+        // Get hostname (pod name in Kubernetes)
+        String hostname = InetAddress.getLocalHost().getHostName();
+        System.out.println("Publisher started on pod: " + hostname);
+
         int messageCount = 1;
 
         DaprClient client = new DaprClientBuilder().build();
         while (true) {
-            String partitionKey = "key-partition";// + (messageCount % 3); // Using 3 different keys
+            String partitionKey = "key-" + hostname; // Using 3 different keys
             String message = String.format("Message #%d (p-Key: %s)", messageCount, partitionKey); 
             
             // Create metadata
