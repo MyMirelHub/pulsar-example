@@ -30,7 +30,7 @@ dapr-pulsar-demo/
 
 ## Setup Steps
 
-### 1. Install Apache Pulsar in Minikube
+### 1. Install Apache Pulsar in your cluster
 
 ```bash
 # Add Pulsar Helm repository
@@ -60,94 +60,30 @@ kubectl create namespace pulsar-test
 
 #### Publisher
 
-```xml
-<!-- publisher/pom.xml dependencies -->
-<dependencies>
-    <dependency>
-        <groupId>io.dapr</groupId>
-        <artifactId>dapr-sdk</artifactId>
-        <version>${dapr.sdk.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>io.dapr</groupId>
-        <artifactId>dapr-sdk-springboot</artifactId>
-        <version>${dapr.sdk.version}</version>
-    </dependency>
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-web</artifactId>
-    </dependency>
-</dependencies>
-```
+```bash
+cd publisher
+mvn clean package
 
-```java
-// Publisher.java
-@SpringBootApplication
-public class Publisher {
-    private static final String PUBSUB_NAME = "pulsar-pubsub";
-    private static final String TOPIC_NAME = "messages";
-
-    public static void main(String[] args) throws Exception {
-        SpringApplication.run(Publisher.class, args);
-        try (DaprClient client = new DaprClientBuilder().build()) {
-            while (true) {
-                String message = "Message " + System.currentTimeMillis();
-                client.publishEvent(PUBSUB_NAME, TOPIC_NAME, message).block();
-                System.out.println("Published: " + message);
-                TimeUnit.SECONDS.sleep(5);
-            }
-        }
-    }
-}
-```
-
-#### Subscriber
-
-```java
-// Subscriber.java
-@SpringBootApplication
-@RestController
-public class Subscriber {
-    public static void main(String[] args) {
-        System.setProperty("server.port", "8082");
-        SpringApplication.run(Subscriber.class, args);
-    }
-
-    @Topic(name = "messages", pubsubName = "pulsar-pubsub")
-    @PostMapping("/messages")
-    public void handleMessage(@RequestBody CloudEvent<String> message) {
-        System.out.println("=== Message Received ===");
-        System.out.println("Data: " + message.getData());
-    }
-}
+cd ../subscriber
+mvn clean package
 ```
 
 ### 4. Create Docker Images
 
 #### Publisher Dockerfile
 
-```dockerfile
-FROM --platform=linux/amd64 openjdk:11-jre-slim
-WORKDIR /app
-COPY target/dapr-pulsar-publisher-1.0-SNAPSHOT.jar app.jar
-ENTRYPOINT ["java", "-jar", "app.jar"]
-```
-
 #### Build Images
 
 ```bash
-# Point to Minikube's Docker daemon
-eval $(minikube docker-env)
-
 # Build publisher
 cd publisher
 mvn clean package
-docker build --platform linux/amd64 -t publisher:1.0 .
+docker build --platform linux/amd64 -t <your-registry>/publisher:1.0 --push .
 
 # Build subscriber
 cd ../subscriber
 mvn clean package
-docker build --platform linux/amd64 -t subscriber:1.0 .
+docker build --platform linux/amd64 -t <your-registry>/subscriber:1.0 --push .
 ```
 
 ### 5. Deploy to Kubernetes
