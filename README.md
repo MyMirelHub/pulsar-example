@@ -75,16 +75,21 @@ mvn clean package
 #### Build Images
 
 ```bash
+docker buildx create --use
+
 # Build publisher
 cd publisher
 mvn clean package
-docker build --platform linux/amd64 -t <your-registry>/publisher:1.0 --push .
+docker buildx build --platform linux/amd64 -t <your-registry>/publisher:1.0 --push .
 
 # Build subscriber
 cd ../subscriber
 mvn clean package
-docker build --platform linux/amd64 -t <your-registry>/subscriber:1.0 --push .
+docker buildx build --platform linux/amd64 -t <your-registry>/subscriber:1.0 --push .
 ```
+
+> [!IMPORTANT]
+> Replace `<your-registry>` with your container registry information, both on the docker build command line and on the app deployment files.
 
 ### 5. Deploy to Kubernetes
 
