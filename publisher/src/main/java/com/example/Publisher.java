@@ -27,7 +27,8 @@ public class Publisher {
 
         DaprClient client = new DaprClientBuilder().build();
         while (true) {
-            String partitionKey = "key-" + hostname; // Using 3 different keys
+            //String partitionKey = "key-" + hostname; // Using 3 different keys
+            String partitionKey = "authoring-event-topic"; // Using one key
             String message = String.format("Message #%d (p-Key: %s)", messageCount, partitionKey); 
             
             // Create metadata
@@ -42,7 +43,7 @@ public class Publisher {
             
             System.out.println("Published message: " + message);
             messageCount++;
-            TimeUnit.SECONDS.sleep(1);
+            TimeUnit.SECONDS.sleep(5);
         }
     }
 }

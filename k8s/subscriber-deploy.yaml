@@ -4,7 +4,7 @@ metadata:
   name: subscriber
   namespace: pulsar-test
 spec:
-  replicas: 5
+  replicas: 2
   selector:
     matchLabels:
       app: subscriber
@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
       - name: subscriber
-        image: <your-registry>/subscriber:1.0
+        image: alicejgibbons/subscriber:1.1
         imagePullPolicy: Always
         env:
         - name: SERVER_PORT
