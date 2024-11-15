@@ -42,7 +42,7 @@ kubectl create namespace pulsar
 
 # Install Pulsar
 helm install pulsar apache/pulsar \
-  --timeout 10m
+  --timeout 10m \
   --namespace pulsar \
   --set components.functions=false \
   --set monitoring.prometheus=false \
