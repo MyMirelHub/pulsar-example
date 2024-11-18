@@ -18,7 +18,7 @@ public class Subscriber {
         System.out.println("Subscriber started on port 8082. Listening for ordered messages...");
     }
 
-    @Topic(name = "messages", pubsubName = "pulsar-pubsub", metadata = "{\"subscribeType\": \"key_shared\"}")
+    //@Topic(name = "messages", pubsubName = "pulsar-pubsub", metadata = "{\"subscribeType\": \"key_shared\"}")
     @PostMapping("/messages")
     public void handleMessage(@RequestBody CloudEvent<String> message) {
     //@RequestMapping Map<String, String> headers

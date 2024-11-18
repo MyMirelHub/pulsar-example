@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
       - name: subscriber
-        image: alicejgibbons/subscriber:1.1
+        image: alicejgibbons/subscriber:1.0
         imagePullPolicy: Always
         env:
         - name: SERVER_PORT
