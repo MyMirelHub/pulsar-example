@@ -7,8 +7,14 @@ spec:
   version: v1
   metadata:
   - name: host
-    value: localhost:6650
+    value: pulsar-proxy.pulsar.svc.cluster.local:6650
   - name: tenant
     value: "public"
   - name: namespace
     value: "default"
+  - name: subscribeType
+    value: "key_shared"
+  - name: processMode
+    value: "sync"
+  - name: "partitionKey"
+    value: "authoring-event-topic"

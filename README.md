@@ -22,15 +22,23 @@ dapr-pulsar-demo/
 
 ## Prerequisites
 
-- A k8s cluster with Dapr installed
-- kubectl
-- Helm
-- Docker
-- Maven
+- A k8s cluster
+- [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl)
+- [Helm](https://helm.sh/docs/intro/install/)
+- [Docker](https://docs.docker.com/engine/install/)
+- [Maven](https://maven.apache.org/install.html)
+- [Dapr CLI](https://docs.dapr.io/getting-started/install-dapr-cli/)
 
 ## Setup Steps
 
-### 1. Install Apache Pulsar in your cluster
+### 1. Install Dapr
+
+```bash
+# Initialize Dapr in your cluster
+dapr init -k
+```
+
+### 2. Install Apache Pulsar in your cluster
 
 ```bash
 # Add Pulsar Helm repository
@@ -42,7 +50,7 @@ kubectl create namespace pulsar
 
 # Install Pulsar
 helm install pulsar apache/pulsar \
-  --timeout 10m
+  --timeout 10m \
   --namespace pulsar \
   --set components.functions=false \
   --set monitoring.prometheus=false \
@@ -50,13 +58,13 @@ helm install pulsar apache/pulsar \
   --set monitoring.node_exporter=false
 ```
 
-### 2. Create Application Namespace
+### 3. Create Application Namespace
 
 ```bash
 kubectl create namespace pulsar-test
 ```
 
-### 3. Build Applications
+### 4. Build Applications
 
 #### Publisher
 
@@ -68,7 +76,7 @@ cd ../subscriber
 mvn clean package
 ```
 
-### 4. Create Docker Images
+### 5. Create Docker Images
 
 #### Publisher Dockerfile
 
@@ -91,7 +99,7 @@ docker buildx build --platform linux/amd64 -t <your-registry>/subscriber:1.0 --p
 > [!IMPORTANT]
 > Replace `<your-registry>` with your container registry information, both on the docker build command line and on the app deployment files.
 
-### 5. Deploy to Kubernetes
+### 6. Deploy to Kubernetes
 
 #### Deploy Applications
 
@@ -104,7 +112,7 @@ kubectl apply -f k8s/publisher-deploy.yaml
 kubectl apply -f k8s/subscriber-deploy.yaml
 ```
 
-### 6. Verify Deployment
+### 7. Verify Deployment
 
 ```bash
 # Check pod status
