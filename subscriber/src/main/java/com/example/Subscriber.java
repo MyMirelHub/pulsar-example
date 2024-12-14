@@ -13,9 +13,10 @@ import io.dapr.client.domain.CloudEvent;
 @RestController
 public class Subscriber {
     public static void main(String[] args) {
+        // Set default port to 8082
         System.setProperty("server.port", "8082");
         SpringApplication.run(Subscriber.class, args);
-        System.out.println("Subscriber started on port 8082. Listening for ordered messages...");
+        System.out.println("Subscriber  has started on port 8082. Listening for messages...");
     }
 
     @Topic(name = "messages", pubsubName = "pulsar-pubsub")

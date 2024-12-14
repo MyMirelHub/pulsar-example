@@ -13,9 +13,9 @@ spec:
     value: "public"
   - name: namespace
     value: "default"
-  - name: subscribeType
-    value: "key_shared"
-  - name: processMode
-    value: "sync"
-  - name: "partitionKey"
-    value: "authoring-event-topic"
+  # - name: subscribeType
+  #   value: "key_shared"
+  # - name: processMode
+  #   value: "sync"
+  # - name: "partitionKey"
+  #   value: "authoring-event-topic"

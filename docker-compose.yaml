@@ -1,4 +1,3 @@
-version: '3'
 services:
   pulsar:
     image: apachepulsar/pulsar:latest
@@ -29,6 +28,7 @@ services:
       "--dapr-grpc-port", "50001",
       "--dapr-http-port", "3500"
     ]
+    
     volumes:
       - "./components/:/components"
     depends_on:

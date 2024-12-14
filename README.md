@@ -182,43 +182,87 @@ docker build --platform linux/amd64 -t <image-name>:1.0 .
 - Pulsar broker runs on port 6650
 - Make sure these ports are available in your cluster
 
-## Key Points
+## Running Options
 
-- Using Dapr for pub/sub abstraction
-- Apache Pulsar as message broker
-- Spring Boot applications for publisher and subscriber
-- Deployed on Minikube with Dapr sidecars
-- Platform-specific Docker builds for compatibility
+There are two ways to run this application using the provided Makefile:
 
-## Run locally
+### 1. Run Everything in Docker (Including Java Apps)
+
+Edit `./components/pulsar-component.yaml` to use docker-compose host option:
+
+```yaml
+- name: host
+  value: "pulsar://pulsar:6650"
+```
+
+Then run:
 
 ```bash
-dapr run --app-id subscriber \
-         --app-port 8082 \
-         --resources-path ../components \
-         -- java -jar target/dapr-pulsar-subscriber-1.0-SNAPSHOT.jar
+# Clean up existing containers and build everything fresh
+make apps-up
+
+# Stop everything
+make apps-down
+```
+
+> ⚠️ **Important Note**: When starting everything with `apps-up`, the subscriber's Dapr sidecar might fail to subscribe initially because the topic doesn't exist yet when Pulsar is starting up. If you don't see messages being received, restart the subscriber container.
+> This gives Pulsar enough time to be fully operational and the topic to be created by the publisher.
+
+### 2. Run Infrastructure in Docker and Apps Locally
+
+Run Pulsar as a Docker container:
+
+```bash
+docker run -d -it \
+  --name pulsar \
+  -p 6650:6650 \
+  -p 8080:8080 \
+  apachepulsar/pulsar:latest \
+  bin/pulsar standalone
+```
+
+Edit `./components/pulsar-component.yaml` to use docker-compose host option:
+
+```yaml
+- name: host
+  value: "localhost:6650"
 ```
 
 ```bash
-dapr run --app-id publisher \
-         --resources-path ../components \
-         -- java -jar target/dapr-pulsar-publisher-1.0-SNAPSHOT.jar
+# Start publisher
+make dapr-run-publisher
+
+# In one terminal, run the subscriber
+make dapr-run-subscriber
 ```
 
-## Run locally using docker-compose
+### 3. Clean Up Everything
 
 ```bash
-cd subscriber 
-mvn clean package
-
-cd ..
-
-cd publisher
-mvn clean package
-
-cd ..
-
-docker compose rm -f
-docker compose pull
-docker compose up --build -d
+make clean
 ```
+
+### Available Make Commands
+
+```bash
+make build                # Build Java applications
+make apps-up              # Start everything including Java apps
+make apps-down            # Stop everything
+make dapr-run-publisher   # Run Publisher using dapr run
+make dapr-run-subscriber  # Run Subscriber using dapr run
+make clean                # Clean up everything
+```
+
+## Important Notes
+
+- The infrastructure setup includes:
+  - Apache Pulsar
+  - Dapr sidecars
+  - Placement service
+- Port configurations:
+  - Publisher app: 8890
+  - Subscriber app: 8082
+  - Pulsar broker: 6650
+  - Pulsar web: 8080
+  - Publisher Dapr sidecar: 50001 (gRPC), 3500 (HTTP)
+  - Subscriber Dapr sidecar: 50002 (gRPC), 3501 (HTTP)
