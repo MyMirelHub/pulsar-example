@@ -156,6 +156,7 @@ kubectl logs -n pulsar-test -l app=subscriber -c daprd
 ```
 
 ## Troubleshooting
+
 1. If pods fail to start, check the events:
 
 ```bash
@@ -204,12 +205,20 @@ dapr run --app-id publisher \
          -- java -jar target/dapr-pulsar-publisher-1.0-SNAPSHOT.jar
 ```
 
+## Run locally using docker-compose
 
-# Try with bash
-docker exec -it pulsar-example-subscriber-dapr-1 bash
+```bash
+cd subscriber 
+mvn clean package
 
-# If bash doesn't work, try
-docker exec -it pulsar-example-subscriber-dapr-1 /bin/busybox sh
+cd ..
 
-# If that doesn't work either, we can see what shell is available:
-docker exec pulsar-example-subscriber-dapr-1 ls /bin
+cd publisher
+mvn clean package
+
+cd ..
+
+docker compose rm -f
+docker compose pull
+docker compose up --build -d
+```
