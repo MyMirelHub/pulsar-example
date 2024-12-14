@@ -7,7 +7,8 @@ spec:
   version: v1
   metadata:
   - name: host
-    value: pulsar-proxy.pulsar.svc.cluster.local:6650
+    value: "pulsar://pulsar:6650" # running using docker-compose
+    #value: "localhost:6650"  # running locally
   - name: tenant
     value: "public"
   - name: namespace

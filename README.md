@@ -76,19 +76,27 @@ cd ../subscriber
 mvn clean package
 ```
 
-### 5. Create Docker Images
+### 4. Create Docker Images
 
 #### Publisher Dockerfile
+
+```dockerfile
+FROM --platform=linux/amd64 openjdk:11-jre-slim
+WORKDIR /app
+COPY target/dapr-pulsar-publisher-1.0-SNAPSHOT.jar app.jar
+ENTRYPOINT ["java", "-jar", "app.jar"]
+```
 
 #### Build Images
 
 ```bash
-docker buildx create --use
+# Point to Minikube's Docker daemon
+eval $(minikube docker-env)
 
 # Build publisher
 cd publisher
 mvn clean package
-docker buildx build --platform linux/amd64 -t <your-registry>/publisher:1.0 --push .
+docker build --platform linux/amd64 -t publisher:1.0 .
 
 # Build subscriber
 cd ../subscriber
@@ -96,10 +104,28 @@ mvn clean package
 docker buildx build --platform linux/amd64 -t <your-registry>/subscriber:1.0 --push .
 ```
 
-> [!IMPORTANT]
-> Replace `<your-registry>` with your container registry information, both on the docker build command line and on the app deployment files.
+### 5. Deploy to Kubernetes
 
-### 6. Deploy to Kubernetes
+#### Dapr Component Configuration
+
+```yaml
+# k8s/pulsar-component.yaml
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: pulsar-pubsub
+  namespace: pulsar-test
+spec:
+  type: pubsub.pulsar
+  version: v1
+  metadata:
+  - name: host
+    value: "pulsar://pulsar-proxy.pulsar.svc.cluster.local:6650"
+  - name: tenant
+    value: "public"
+  - name: namespace
+    value: "default"
+```
 
 #### Deploy Applications
 
@@ -162,3 +188,28 @@ docker build --platform linux/amd64 -t <image-name>:1.0 .
 - Spring Boot applications for publisher and subscriber
 - Deployed on Minikube with Dapr sidecars
 - Platform-specific Docker builds for compatibility
+
+## Run locally
+
+```bash
+dapr run --app-id subscriber \
+         --app-port 8082 \
+         --resources-path ../components \
+         -- java -jar target/dapr-pulsar-subscriber-1.0-SNAPSHOT.jar
+```
+
+```bash
+dapr run --app-id publisher \
+         --resources-path ../components \
+         -- java -jar target/dapr-pulsar-publisher-1.0-SNAPSHOT.jar
+```
+
+
+# Try with bash
+docker exec -it pulsar-example-subscriber-dapr-1 bash
+
+# If bash doesn't work, try
+docker exec -it pulsar-example-subscriber-dapr-1 /bin/busybox sh
+
+# If that doesn't work either, we can see what shell is available:
+docker exec pulsar-example-subscriber-dapr-1 ls /bin

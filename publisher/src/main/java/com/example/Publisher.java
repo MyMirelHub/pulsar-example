@@ -35,15 +35,20 @@ public class Publisher {
             Map<String, String> metadata = new HashMap<>();
             metadata.put("partitionKey", partitionKey);
 
-            client.publishEvent(
+            try {
+                client.publishEvent(
                 PUBSUB_NAME,
                 TOPIC_NAME,
                 message,
                 metadata).block();
             
             System.out.println("Published message: " + message);
+            } catch (Exception e) {
+                System.out.println("Failed to send message: " + e);
+            }
+            
             messageCount++;
-            TimeUnit.SECONDS.sleep(5);
+            TimeUnit.SECONDS.sleep(1);
         }
     }
 }

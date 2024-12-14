@@ -18,10 +18,12 @@ public class Subscriber {
         System.out.println("Subscriber started on port 8082. Listening for ordered messages...");
     }
 
-    //@Topic(name = "messages", pubsubName = "pulsar-pubsub", metadata = "{\"subscribeType\": \"key_shared\"}")
+    @Topic(name = "messages", pubsubName = "pulsar-pubsub")
     @PostMapping("/messages")
     public void handleMessage(@RequestBody CloudEvent<String> message) {
-    //@RequestMapping Map<String, String> headers
-        System.out.println("Processed message: " + message.getData());
+        System.out.println("=== Message Received ===");
+        System.out.println("ID: " + message.getId());
+        System.out.println("Data: " + message.getData());
+        System.out.println("=====================");
     }
 }
