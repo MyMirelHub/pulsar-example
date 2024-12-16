@@ -289,7 +289,7 @@ make dapr-run-publisher
 make dapr-run-subscriber
 ```
 
-### 3. Clean Up Everything
+### 4. Clean Up Everything
 
 ```bash
 make clean
