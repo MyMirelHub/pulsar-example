@@ -14,10 +14,10 @@ dapr-pulsar-demo/
 │   ├── src/main/java/com/example/Subscriber.java
 │   ├── pom.xml
 │   └── Dockerfile
-└── k8s/
-    ├── publisher-deploy.yaml
-    ├── subscriber-deploy.yaml
-    └── pulsar-component.yaml
+├── components/
+│   └── pulsar.yaml
+├── docker-compose.yaml
+└── Makefile
 ```
 
 ## Prerequisites
@@ -184,9 +184,62 @@ docker build --platform linux/amd64 -t <image-name>:1.0 .
 
 ## Running Options
 
-There are two ways to run this application using the provided Makefile:
+### 1. Run using docker-compose
 
-### 1. Run Everything using docker-compose Docker (Including Java Apps)
+#### Setup Pulsar component host
+
+Edit `./components/pulsar-component.yaml` to use docker-compose host option:
+
+```yaml
+- name: host
+  value: "pulsar://pulsar:6650"
+```
+
+#### Build the Java Applications
+
+```bash
+# Build publisher
+cd publisher
+mvn clean package
+
+# Build subscriber
+cd ../subscriber
+mvn clean package
+cd ..
+```
+
+### Start the Applications
+
+First, clean up any existing containers to prevent caching issues:
+
+```bash
+# Remove existing containers
+docker rm -f $(docker ps -aq)
+
+# Remove existing images
+docker rmi $(docker images -q 'pulsar-example-publisher' -a)
+docker rmi $(docker images -q 'pulsar-example-subscriber' -a)
+```
+
+Then start everything:
+
+```bash
+docker compose up -d --build
+```
+
+### Stop Everything
+
+```bash
+docker compose down
+```
+
+> ⚠️ **Important Note**: When starting the applications, the subscriber's Dapr sidecar might fail to subscribe initially because the topic doesn't exist yet when Pulsar is starting up. If you don't see messages being received, restart the subscriber containers:
+> ```bash
+> docker compose restart subscriber subscriber-dapr
+> ```
+
+
+### 2. Run using Make
 
 Edit `./components/pulsar-component.yaml` to use docker-compose host option:
 
@@ -208,7 +261,7 @@ make apps-down
 > ⚠️ **Important Note**: When starting everything with `apps-up`, the subscriber's Dapr sidecar might fail to subscribe initially because the topic doesn't exist yet when Pulsar is starting up. If you don't see messages being received, restart the subscriber container.
 > This gives Pulsar enough time to be fully operational and the topic to be created by the publisher.
 
-### 2. Run Infrastructure in Docker and Apps Locally
+### 3. Run Infrastructure in Docker and Apps Locally (using `dapr run`)
 
 Run Pulsar as a Docker container:
 
