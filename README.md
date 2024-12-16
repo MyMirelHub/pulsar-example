@@ -186,7 +186,7 @@ docker build --platform linux/amd64 -t <image-name>:1.0 .
 
 There are two ways to run this application using the provided Makefile:
 
-### 1. Run Everything in Docker (Including Java Apps)
+### 1. Run Everything using docker-compose Docker (Including Java Apps)
 
 Edit `./components/pulsar-component.yaml` to use docker-compose host option:
 
