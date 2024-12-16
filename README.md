@@ -29,7 +29,7 @@ dapr-pulsar-demo/
 - [Maven](https://maven.apache.org/install.html)
 - [Dapr CLI](https://docs.dapr.io/getting-started/install-dapr-cli/)
 
-## Setup Steps
+## Setup Steps for Kubernetes Deployment
 
 ### 1. Install Dapr
 
