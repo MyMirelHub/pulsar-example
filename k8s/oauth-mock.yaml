@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oauth-mock
+  namespace: oauth-mock
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oauth-mock
+  template:
+    metadata:
+      labels:
+        app: oauth-mock
+    spec:
+      containers:
+      - name: oauth
+        image: node:18-alpine
+        command: ['sh', '-c']
+        args:
+        - |
+          node -e "
+          const http = require('http');
+          http.createServer((req, res) => {
+            if (req.method === 'POST' && req.url === '/dex/token') {
+              const token = {
+                access_token: 'token-' + Date.now(),
+                token_type: 'Bearer',
+                expires_in: 120
+              };
+              console.log('[' + new Date().toISOString() + '] Issued token:', token.access_token);
+              res.writeHead(200, {'Content-Type': 'application/json'});
+              res.end(JSON.stringify(token));
+            } else {
+              res.writeHead(404);
+              res.end();
+            }
+          }).listen(5556, '0.0.0.0', () => console.log('Mock OAuth on :5556'));
+          "
+        ports:
+        - containerPort: 5556
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dex
+  namespace: dex
+spec:
+  selector:
+    app: oauth-mock
+  ports:
+  - port: 5556
+    targetPort: 5556

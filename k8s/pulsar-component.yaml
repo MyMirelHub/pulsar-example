@@ -13,7 +13,17 @@ spec:
     value: "public"
   - name: namespace
     value: "default"
-  - name: subscriberType
+  - name: subscribeType
     value: "key_shared"
   - name: processMode
     value: "sync"
+  - name: oauth2TokenURL
+    value: "http://dex.dex.svc.cluster.local:5556/dex/token"
+  - name: oauth2ClientID
+    value: "pulsar-client"
+  - name: oauth2ClientSecret
+    value: "pulsar-secret"
+  - name: oauth2Audiences
+    value: "pulsar-client"
+  - name: oauth2Scopes
+    value: "openid"
