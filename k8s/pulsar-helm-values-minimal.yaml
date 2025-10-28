@@ -1,0 +1,60 @@
+## deployed withh emptyDir
+volumes:
+  persistence: false
+
+## disable monitoring stack
+victoria-metrics-k8s-stack:
+  enabled: false
+  prometheusOperator:
+    enabled: false
+  grafana:
+    enabled: false
+  alertmanager:
+    enabled: false
+  prometheus:
+    enabled: false
+
+# disabled AntiAffinity
+affinity:
+  anti_affinity: false
+
+components:
+  autorecovery: false
+  pulsar_manager: false
+
+zookeeper:
+  replicaCount: 1
+  podMonitor:
+    enabled: false
+
+
+bookkeeper:
+  replicaCount: 1
+  configData:
+    # minimal memory use for bookkeeper
+    # https://bookkeeper.apache.org/docs/reference/config#db-ledger-storage-settings
+    dbStorage_writeCacheMaxSizeMb: "32"
+    dbStorage_readAheadCacheMaxSizeMb: "32"
+    dbStorage_rocksDB_writeBufferSizeMB: "8"
+    dbStorage_rocksDB_blockCacheSize: "8388608"
+  podMonitor:
+    enabled: false
+
+broker:
+  replicaCount: 1
+  configData:
+    ## Enable `autoSkipNonRecoverableData` since bookkeeper is running
+    ## without persistence
+    autoSkipNonRecoverableData: "true"
+    # storage settings
+    managedLedgerDefaultEnsembleSize: "1"
+    managedLedgerDefaultWriteQuorum: "1"
+    managedLedgerDefaultAckQuorum: "1"
+  podMonitor:
+    enabled: false
+
+
+proxy:
+  replicaCount: 1
+  podMonitor:
+    enabled: false

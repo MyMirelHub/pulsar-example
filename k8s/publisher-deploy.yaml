@@ -15,15 +15,10 @@ spec:
       annotations:
         dapr.io/enabled: "true"
         dapr.io/app-id: "publisher"
+        dapr.io/log-level: "debug"
+        dapr.io/log-as-json	: "true"
     spec:
       containers:
       - name: publisher
-        image: alicejgibbons/publisher:1.1
-        imagePullPolicy: Always
-        resources:
-          requests:
-            memory: "512Mi"
-            cpu: "0.2"
-          limits:
-            memory: "1Gi"
-            cpu: "0.5"
+        image: us-central1-docker.pkg.dev/strong-harbor-338418/elia-sb-debug-mirel/avro-producer:latest
+        imagePullPolicy: IfNotPresent

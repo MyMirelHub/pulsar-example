@@ -11,7 +11,7 @@
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <dapr.sdk.version>1.10.0</dapr.sdk.version>
+        <dapr.sdk.version>1.16.0</dapr.sdk.version>
         <spring.boot.version>2.7.18</spring.boot.version>
     </properties>
 
