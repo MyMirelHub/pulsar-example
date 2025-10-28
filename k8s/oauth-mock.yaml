@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: oauth-mock
-  namespace: oauth-mock
+  namespace: dex
 spec:
   replicas: 1
   selector:
