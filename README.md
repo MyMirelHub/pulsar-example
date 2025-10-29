@@ -15,6 +15,85 @@ When using OAuth2 client_credentials authentication with the Pulsar component, m
 - [Maven](https://maven.apache.org/install.html)
 - [Dapr CLI](https://docs.dapr.io/getting-started/install-dapr-cli/)
 
+## Configuration Overview
+
+### OAuth2 Mock Server (60-second tokens)
+```yaml
+# k8s/oauth-mock.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: oauth-config
+  namespace: pulsar-test
+data:
+  config.json: |
+    {
+      "interactiveLogin": false,
+      "tokenCallbacks": [
+        {
+          "issuerId": "default",
+          "tokenExpiry": 60,  # 60-second token expiry
+          "requestMappings": [
+            {
+              "requestParam": "grant_type",
+              "match": "client_credentials",
+              "claims": {
+                "sub": "pulsar-client",
+                "aud": ["pulsar"]
+              }
+            }
+          ]
+        }
+      ]
+    }
+```
+
+### Dapr Pulsar Component with OAuth2
+```yaml
+# k8s/pulsar-component.yaml
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: pulsar-pubsub
+  namespace: pulsar-test
+spec:
+  type: pubsub.pulsar
+  version: v1
+  metadata:
+  - name: host
+    value: "pulsar-broker.pulsar.svc.cluster.local:6650"
+  - name: oauth2TokenURL
+    value: "http://mock-oauth2.pulsar-test.svc.cluster.local:8080/default/token"
+  - name: oauth2ClientID
+    value: "pulsar-client"
+  - name: oauth2ClientSecret
+    value: "pulsar-secret"
+  - name: oauth2Audiences
+    value: "pulsar"
+  - name: oauth2Scopes
+    value: "openid"
+```
+
+### Pulsar Broker with OAuth2 Authentication
+```yaml
+# k8s/pulsar-helm-values-minimal.yaml (excerpt)
+auth:
+  authentication:
+    enabled: true
+    openid:
+      enabled: true
+      openIDAllowedTokenIssuers: 
+        - "http://mock-oauth2.pulsar-test.svc.cluster.local:8080/default"
+      openIDAllowedAudiences: 
+        - "pulsar"
+
+broker:
+  configData:
+    brokerClientAuthenticationPlugin: org.apache.pulsar.client.impl.auth.oauth2.AuthenticationOAuth2
+    brokerClientAuthenticationParameters: >-
+      {"privateKey":"...","audience":"pulsar","issuerUrl":"http://mock-oauth2.pulsar-test.svc.cluster.local:8080/default"}
+```
+
 ## Setup Steps
 
 ### 1. Install Dapr
@@ -55,11 +134,14 @@ kubectl apply -f k8s/oauth-mock.yaml
 kubectl apply -f k8s/pulsar-component.yaml
 ```
 
-### 6 Deploy Publisher Application
+### 6. Deploy Publisher Application
 ```bash
 # Deploy publisher
 cd ..
 kubectl apply -f k8s/publisher-deploy.yaml
+
+# Wait for publisher to be ready
+kubectl wait --for=condition=ready pod -l app=publisher -n pulsar-test --timeout=120s
 ```
 
 ## Reproduce the Bug
