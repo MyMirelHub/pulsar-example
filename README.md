@@ -47,9 +47,6 @@ kubectl create namespace pulsar-test
 ```bash
 # Deploy mock OAuth2 server that issues 60-second tokens
 kubectl apply -f k8s/oauth-mock.yaml
-
-# Wait for OAuth server to be ready
-kubectl wait --for=condition=ready pod -l app=mock-oauth2 -n pulsar-test --timeout=60s
 ```
 
 ### 5. Deploy Dapr Pulsar Component
@@ -63,9 +60,6 @@ kubectl apply -f k8s/pulsar-component.yaml
 # Deploy publisher
 cd ..
 kubectl apply -f k8s/publisher-deploy.yaml
-
-# Wait for publisher to be ready
-kubectl wait --for=condition=ready pod -l app=publisher -n pulsar-test --timeout=120s
 ```
 
 ## Reproduce the Bug
@@ -127,4 +121,3 @@ kubectl logs -n pulsar pulsar-broker-0 | grep -A2 "Refreshing authentication"
 **Evidence:**
 - OAuth server logs show Pulsar broker successfully renews at 08:55:08 and 08:57:08
 - OAuth server logs show **ZERO renewal attempts from Dapr client**
-- This proves Dapr's OAuth token renewal is completely broken
