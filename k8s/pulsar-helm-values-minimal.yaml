@@ -44,7 +44,6 @@ bookkeeper:
 broker:
   replicaCount: 1
   configData:
-    PULSAR_LOG_LEVEL: debug
     autoSkipNonRecoverableData: "true"
     managedLedgerDefaultEnsembleSize: "1"
     managedLedgerDefaultWriteQuorum: "1"
