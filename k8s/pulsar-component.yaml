@@ -8,7 +8,7 @@ spec:
   version: v1
   metadata:
   - name: host
-    value: "pulsar-proxy.pulsar.svc.cluster.local:6650"
+    value: "pulsar-broker.pulsar.svc.cluster.local:6650"
   - name: tenant
     value: "public"
   - name: namespace
