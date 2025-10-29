@@ -74,5 +74,6 @@ auth:
         - "pulsar"
       openIDRequireIssuersUseHttps: "false"
       openIDAcceptedTimeLeewaySeconds: "0"
+      openIDRoleClaim: "sub"
   authorization:
     enabled: false
