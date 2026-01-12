@@ -50,7 +50,7 @@ broker:
     managedLedgerDefaultAckQuorum: "1"
     brokerClientAuthenticationPlugin: org.apache.pulsar.client.impl.auth.oauth2.AuthenticationOAuth2
     brokerClientAuthenticationParameters: >-
-      {"privateKey":"data:application/json;base64,eyJ0eXBlIjoiY2xpZW50X2NyZWRlbnRpYWxzIiwiY2xpZW50X2lkIjoicHVsc2FyLWJyb2tlciIsImNsaWVudF9zZWNyZXQiOiJicm9rZXItc2VjcmV0IiwiaXNzdWVyVXJsIjoiaHR0cDovL21vY2stb2F1dGgyLnB1bHNhci10ZXN0LnN2Yy5jbHVzdGVyLmxvY2FsOjgwODAvZGVmYXVsdCJ9","audience":"pulsar","issuerUrl":"http://mock-oauth2.pulsar-test.svc.cluster.local:8080/default"}
+      {"privateKey":"data:application/json;base64,eyJ0eXBlIjoiY2xpZW50X2NyZWRlbnRpYWxzIiwiY2xpZW50X2lkIjoicHVsc2FyLWJyb2tlciIsImNsaWVudF9zZWNyZXQiOiJicm9rZXItc2VjcmV0IiwiaXNzdWVyVXJsIjoiaHR0cDovL2h5ZHJhLW9hdXRoMi1wdWJsaWMucHVsc2FyLXRlc3Quc3ZjLmNsdXN0ZXIubG9jYWw6NDQ0NCJ9","audience":"pulsar","issuerUrl":"http://hydra-oauth2-public.pulsar-test.svc.cluster.local:4444"}
   podMonitor:
     enabled: false
 
@@ -69,7 +69,8 @@ auth:
     openid:
       enabled: true
       openIDAllowedTokenIssuers: 
-        - "http://mock-oauth2.pulsar-test.svc.cluster.local:8080/default"
+        - "http://hydra-oauth2.pulsar-test.svc.cluster.local:4444"
+        - "http://hydra-oauth2-public.pulsar-test.svc.cluster.local:4444"
       openIDAllowedAudiences: 
         - "pulsar"
       openIDRequireIssuersUseHttps: "false"

@@ -1,0 +1,47 @@
+apiVersion: hydra.ory.sh/v1alpha1
+kind: OAuth2Client
+metadata:
+  name: pulsar-client
+  namespace: pulsar-test
+spec:
+  grantTypes:
+    - client_credentials
+  responseTypes:
+    - token
+  scope: openid
+  secretName: pulsar-client-credentials
+  tokenEndpointAuthMethod: client_secret_post
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: pulsar-client-credentials
+  namespace: pulsar-test
+type: Opaque
+stringData:
+  CLIENT_ID: pulsar-client
+  CLIENT_SECRET: pulsar-secret
+---
+apiVersion: hydra.ory.sh/v1alpha1
+kind: OAuth2Client
+metadata:
+  name: pulsar-broker
+  namespace: pulsar-test
+spec:
+  grantTypes:
+    - client_credentials
+  responseTypes:
+    - token
+  scope: openid
+  secretName: pulsar-broker-credentials
+  tokenEndpointAuthMethod: client_secret_post
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: pulsar-broker-credentials
+  namespace: pulsar-test
+type: Opaque
+stringData:
+  CLIENT_ID: pulsar-broker
+  CLIENT_SECRET: broker-secret
