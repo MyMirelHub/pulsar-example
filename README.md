@@ -1,19 +1,4 @@
-# Dapr Pulsar OAuth2 Client Secret from File Fix
-
-This repository demonstrates the fix for reading OAuth2 client secrets from files in Dapr's Pulsar component.
-
-## Problem
-
-The Pulsar component supports `oauth2ClientSecretPath` to read client secrets from files, but the original implementation incorrectly used `NewAuthenticationTokenFromFile`, which expects a raw JWT token file. This fix correctly implements file reading and uses `NewAuthenticationTokenFromSupplier` with OAuth2 client credentials flow.
-
-## Solution
-
-The fix adds support for reading secrets from:
-- **Plain text files**: Contains just the secret value
-- **JSON files**: Contains `{"client_secret": "value"}` structure
-
-The implementation was refactored to use `ClientCredentialsMetadata.ResolveCredentials()` in the oauth2 package, which handles file reading and JSON parsing, making it reusable for other components.
-
+e reading and JSON parsing, making it reusable for other components.
 ## Quick Start
 
 ### Prerequisites
