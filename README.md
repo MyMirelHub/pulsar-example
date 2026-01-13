@@ -1,10 +1,4 @@
-e reading and JSON parsing, making it reusable for other components.
-## Quick Start
-
-### Prerequisites
-- Minikube with registry addon enabled
-- Helm 3.x
-- kubectl
+## Credential File Issue Repro
 
 ### 1. Create Namespaces
 ```bash
