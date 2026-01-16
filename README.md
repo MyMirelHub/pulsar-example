@@ -1,112 +1,31 @@
-# Dapr Pulsar Publishing Demo
+## Dapr Pulsar OAuth2 Client Secret File Path Testing
 
-## Prerequisites
+This project demonstrates the Dapr Pulsar component's ability to read OAuth2 client secrets from files (`oauth2ClientSecretPath` feature).
 
-- A k8s cluster
-- [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl)
-- [Helm](https://helm.sh/docs/intro/install/)
-- [Docker](https://docs.docker.com/engine/install/)
-- [Maven](https://maven.apache.org/install.html)
-- [Dapr CLI](https://docs.dapr.io/getting-started/install-dapr-cli/)
+**Status:** ✅ Feature is production ready (tested on Minikube)
 
-## Setup Steps for Kubernetes Deployment
+### Quick Start
 
-### 1. Install Dapr
+See [k8s/README.md](k8s/README.md) for complete testing instructions.
 
-```bash
-# Initialize Dapr in your cluster
-dapr init -k
-```
+The k8s folder is organized into:
+- **infrastructure/** - Helm values for Hydra and Pulsar
+- **components/** - Dapr component definitions
+- **credentials/** - OAuth2 credential files (ConfigMaps)
+- **test-scenarios/** - Test deployments and scenario guides
 
-### 2. Install Apache Pulsar in your cluster
+### Three Test Scenarios
 
-```bash
-# Add Pulsar Helm repository
-helm repo add apache https://pulsar.apache.org/charts
-helm repo update
+1. **Option A: Plain Text Secret** ✅ PASSING
+   - Deploy: `k8s/credentials/oauth-credentials-plain-text.yaml` + component + deployment
+   - Result: Messages published continuously
 
-# Create namespace for Pulsar
-kubectl create namespace pulsar
+2. **Option B: JSON Secret (Valid)** ✅ PASSING
+   - Deploy: `k8s/credentials/oauth-credentials-json.yaml` + component + deployment
+   - Result: Messages published continuously
 
-# Install Pulsar
-helm install pulsar apache/pulsar \
-  --timeout 10m \
-  --namespace pulsar \
-  --values ./k8s/pulsar-helm-values-minimal.yaml 
-```
+3. **Option C: JSON Secret (Invalid)** ✅ FAILING AS EXPECTED
+   - Deploy: `k8s/credentials/oauth-credentials-json-invalid.yaml` + component + deployment
+   - Result: Auth error (expected)
 
-### 3. Create Application Namespace
 
-```bash
-kubectl create namespace pulsar-test
-```
-
-### 4. Build Applications
-
-#### Publisher
-
-```bash
-cd publisher
-mvn clean package
-```
-
-### 5. Create Docker Images
-
-#### Build Images
-
-```bash
-# Point to Minikube's Docker daemon
-eval $(minikube docker-env)
-
-# Build publisher
-cd publisher
-mvn clean package
-docker build -t publisher:1.0 .
-
-```
-
-### 5. Deploy to Kubernetes
-
-#### Dapr Component Configuration
-
-```yaml
-# k8s/pulsar-component.yaml
-apiVersion: dapr.io/v1alpha1
-kind: Component
-metadata:
-  name: pulsar-pubsub
-  namespace: pulsar-test
-spec:
-  type: pubsub.pulsar
-  version: v1
-  metadata:
-  - name: host
-    value: "pulsar://pulsar-proxy.pulsar.svc.cluster.local:6650"
-  - name: tenant
-    value: "public"
-  - name: namespace
-    value: "default"
-```
-
-#### 6. Deploy Applications
-
-```bash
-# Apply Dapr component
-kubectl apply -f k8s/pulsar-component.yaml
-
-# Deploy publisher and subscriber
-kubectl apply -f k8s/publisher-deploy.yaml
-```
-
-### 7. Verify Deployment
-
-```bash
-# Check pod status
-kubectl get pods -n pulsar-test
-
-# Check publisher logs
-kubectl logs -n pulsar-test -l app=publisher -c publisher
-
-# Check Dapr sidecar logs if needed
-kubectl logs -n pulsar-test -l app=publisher -c daprd
-```

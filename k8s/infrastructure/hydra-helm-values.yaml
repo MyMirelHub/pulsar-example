@@ -1,0 +1,43 @@
+fullnameOverride: "hydra-oauth2"
+
+deployment:
+  extraEnv:
+    - name: DSN
+      value: memory
+  resources: {}
+
+hydra:
+  config:
+    serve:
+      public:
+        port: 4444
+      admin:
+        port: 4445
+    urls:
+      self:
+        issuer: http://hydra-oauth2-public.pulsar-test.svc.cluster.local:4444
+    oidc:
+      subject_identifiers:
+        supported_types:
+          - public
+    strategies:
+      access_token: jwt
+  automigration:
+    enabled: false
+  dev: true
+
+service:
+  public:
+    enabled: true
+    type: ClusterIP
+    port: 4444
+  admin:
+    enabled: true
+    type: ClusterIP
+    port: 4445
+
+
+maester:
+  enabled: true
+  enabledNamespaces:
+    - pulsar-test

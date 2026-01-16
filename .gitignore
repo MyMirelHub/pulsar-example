@@ -32,3 +32,6 @@ target/
 .fake
 
 .DS_Store
+.github/
+.vscode/
+.idea/

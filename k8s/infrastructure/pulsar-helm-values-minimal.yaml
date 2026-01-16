@@ -1,0 +1,80 @@
+volumes:
+  persistence: false
+
+## disable monitoring stack
+victoria-metrics-k8s-stack:
+  enabled: false
+  prometheusOperator:
+    enabled: false
+  grafana:
+    enabled: false
+  alertmanager:
+    enabled: false
+  prometheus:
+    enabled: false
+
+# disabled AntiAffinity
+affinity:
+  anti_affinity: false
+
+components:
+  broker: true          
+  proxy: false
+  toolset: false        
+  autorecovery: false
+  pulsar_manager: false
+  functions: false
+
+zookeeper:
+  replicaCount: 1
+  podMonitor:
+    enabled: false
+
+
+bookkeeper:
+  replicaCount: 1
+  configData:
+    dbStorage_writeCacheMaxSizeMb: "32"
+    dbStorage_readAheadCacheMaxSizeMb: "32"
+    dbStorage_rocksDB_writeBufferSizeMB: "8"
+    dbStorage_rocksDB_blockCacheSize: "8388608"
+  podMonitor:
+    enabled: false
+
+broker:
+  replicaCount: 1
+  configData:
+    autoSkipNonRecoverableData: "true"
+    managedLedgerDefaultEnsembleSize: "1"
+    managedLedgerDefaultWriteQuorum: "1"
+    managedLedgerDefaultAckQuorum: "1"
+    brokerClientAuthenticationPlugin: org.apache.pulsar.client.impl.auth.oauth2.AuthenticationOAuth2
+    brokerClientAuthenticationParameters: >-
+      {"privateKey":"data:application/json;base64,eyJ0eXBlIjoiY2xpZW50X2NyZWRlbnRpYWxzIiwiY2xpZW50X2lkIjoicHVsc2FyLWJyb2tlciIsImNsaWVudF9zZWNyZXQiOiJicm9rZXItc2VjcmV0IiwiaXNzdWVyVXJsIjoiaHR0cDovL2h5ZHJhLW9hdXRoMi1wdWJsaWMucHVsc2FyLXRlc3Quc3ZjLmNsdXN0ZXIubG9jYWw6NDQ0NCJ9","audience":"pulsar","issuerUrl":"http://hydra-oauth2-public.pulsar-test.svc.cluster.local:4444"}
+  podMonitor:
+    enabled: false
+
+proxy:
+  replicaCount: 1
+  podMonitor:
+    enabled: false
+
+autorecovery:
+  podMonitor:
+    enabled: false
+
+auth:
+  authentication:
+    enabled: true
+    openid:
+      enabled: true
+      openIDAllowedTokenIssuers: 
+        - "http://hydra-oauth2.pulsar-test.svc.cluster.local:4444"
+        - "http://hydra-oauth2-public.pulsar-test.svc.cluster.local:4444"
+      openIDAllowedAudiences: 
+        - "pulsar"
+      openIDRequireIssuersUseHttps: "false"
+      openIDAcceptedTimeLeewaySeconds: "0"
+      openIDRoleClaim: "sub"
+  authorization:
+    enabled: false
