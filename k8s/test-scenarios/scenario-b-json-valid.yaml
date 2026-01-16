@@ -1,0 +1,78 @@
+# Test Scenario B: JSON Secret (Valid)
+# Tests oauth2ClientSecretPath with JSON secret file
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pulsar-secret-json-valid
+  namespace: pulsar-test
+data:
+  pulsar-secret.json: |
+    {
+      "client_secret": "pulsar-secret"
+    }
+
+---
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: pulsar-pubsub-json-valid
+  namespace: pulsar-test
+spec:
+  type: pubsub.pulsar
+  version: v1
+  metadata:
+  - name: host
+    value: "pulsar-broker.pulsar.svc.cluster.local:6650"
+  - name: tenant
+    value: "public"
+  - name: namespace
+    value: "default"
+  - name: oauth2ClientID
+    value: "pulsar-client"
+  - name: oauth2ClientSecretPath
+    value: "/snp/resources/pulsar-secret.json"
+  - name: oauth2TokenURL
+    value: "http://hydra-oauth2-public.pulsar-test.svc.cluster.local:4444/oauth2/token"
+
+---
+apiVersion: v1
+kind: Deployment
+metadata:
+  name: publisher-fixed-json
+  namespace: pulsar-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: publisher-fixed-json
+      scenario: json-valid
+  template:
+    metadata:
+      labels:
+        app: publisher-fixed-json
+        scenario: json-valid
+      annotations:
+        dapr.io/enabled: "true"
+        dapr.io/app-id: "publisher-fixed-json"
+        dapr.io/log-level: "info"
+        dapr.io/volume-mounts: "pulsar-secret:/snp/resources"
+    spec:
+      containers:
+      - name: publisher
+        image: publisher:1.0
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8080
+        env:
+        - name: PUBSUB_NAME
+          value: pulsar-pubsub-json-valid
+        - name: TOPIC_NAME
+          value: test-topic
+        volumeMounts:
+        - name: pulsar-secret
+          mountPath: /snp/resources
+      volumes:
+      - name: pulsar-secret
+        configMap:
+          name: pulsar-secret-json-valid

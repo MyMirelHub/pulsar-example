@@ -20,6 +20,8 @@ hydra:
       subject_identifiers:
         supported_types:
           - public
+    strategies:
+      access_token: jwt
   automigration:
     enabled: false
   dev: true
